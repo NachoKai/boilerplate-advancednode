@@ -27,20 +27,28 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.route("/").get((req, res) => {
-  res.render(process.cwd() + "/views/pug/index", {
-    title: "Hello",
-    message: "Please login",
-  });
-});
+myDB(async client => {
+  const myDataBase = await client.db("database").collection("users");
 
-passport.serializeUser((user, done) => {
-  done(null, user._id);
-});
-passport.deserializeUser((id, done) => {
-  // myDataBase.findOne({ _id: new ObjectID(id) }, (err, doc) => {
-  done(null, null);
-  // });
+  app.route("/").get((req, res) => {
+    res.render("pug", {
+      title: "Connected to Database",
+      message: "Please login",
+    });
+  });
+
+  passport.serializeUser((user, done) => {
+    done(null, user._id);
+  });
+  passport.deserializeUser((id, done) => {
+    myDataBase.findOne({ _id: new ObjectID(id) }, (err, doc) => {
+      done(null, doc);
+    });
+  });
+}).catch(e => {
+  app.route("/").get((req, res) => {
+    res.render("pug", { title: e, message: "Unable to login" });
+  });
 });
 
 app.listen(process.env.PORT || 3000, () => {
