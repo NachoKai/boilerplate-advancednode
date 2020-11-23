@@ -10,10 +10,15 @@ app.use("/public", express.static(process.cwd() + "/public"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.set("view engine", "pug");
+
 app.route("/").get((req, res) => {
-  res.render("Load your view here");
+  app.render('pug', function (err, html) {
+  })
 });
 
 app.listen(port, () => {
   console.log("Listening on port " + port);
 });
+
+// https://stark-harbor-99507.herokuapp.com/
