@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
-const myDB = require("./connection");
+const session = require("express-session");
+const passport = require("passport");
 const fccTesting = require("./freeCodeCamp/fcctesting.js");
 const port = process.env.PORT || 3000;
 const app = express();
@@ -18,6 +19,17 @@ app.route("/").get((req, res) => {
     message: "Please login",
   });
 });
+
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: true,
+    saveUninitialized: true,
+    cookie: { secure: false },
+  })
+);
+
+app.use(passport.initialize());
 
 app.listen(port, () => {
   console.log("Listening on port " + port);
