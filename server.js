@@ -1,24 +1,19 @@
+"use strict";
 require("dotenv").config();
 const express = require("express");
+const myDB = require("./connection");
+const fccTesting = require("./freeCodeCamp/fcctesting.js");
 const session = require("express-session");
 const passport = require("passport");
-const fccTesting = require("./freeCodeCamp/fcctesting.js");
-const port = process.env.PORT || 3000;
+
 const app = express();
+app.set("view engine", "pug");
 
 fccTesting(app);
+
 app.use("/public", express.static(process.cwd() + "/public"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-app.set("view engine", "pug");
-
-app.route("/").get((req, res) => {
-  res.render(process.cwd() + "/views/pug/index", {
-    title: "Hello",
-    message: "Please login",
-  });
-});
 
 app.use(
   session({
@@ -30,9 +25,17 @@ app.use(
 );
 
 app.use(passport.initialize());
+app.use(passport.session());
 
-app.listen(port, () => {
-  console.log("Listening on port " + port);
+app.route("/").get((req, res) => {
+  res.render(process.cwd() + "/views/pug/index", {
+    title: "Hello",
+    message: "Please login",
+  });
+});
+
+app.listen(process.env.PORT || 3000, () => {
+  console.log("Listening on port " + process.env.PORT);
 });
 
 // https://stark-harbor-99507.herokuapp.com/
